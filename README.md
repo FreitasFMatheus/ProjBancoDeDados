@@ -1,7 +1,10 @@
 # ProjBancoDeDados
 ## Membros
-Matheus Ferreira de Freitas  RA: 22.125.085-5
+
+Matheus Ferreira de Freitas  RA: 22.125.085-5 
+
 Henrique Hodel Babler        RA: 22.125.084-8
+
 ## Mermaid
 Os [Mermaid](https://mermaid.live) foi usado para desenhar os diagramas MR e MER.
 ### MR
