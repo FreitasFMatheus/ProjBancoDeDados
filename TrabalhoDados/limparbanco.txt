@@ -1,0 +1,21 @@
+-- Remova dependências explícitas de Depto primeiro:
+UPDATE Depto SET chefe_depto = NULL;
+
+-- Agora limpe as tabelas dependentes:
+DELETE FROM HistoricoEscolar;
+DELETE FROM Nota;
+DELETE FROM Avaliacao;
+DELETE FROM Aula;
+DELETE FROM TCC;
+DELETE FROM Grupo_TCC;
+DELETE FROM Aluno;
+DELETE FROM Turma;
+DELETE FROM Disciplina;
+DELETE FROM Curso;
+
+-- Depois limpe Professor:
+DELETE FROM Professor;
+
+-- Agora limpe Pessoa e Depto:
+DELETE FROM Pessoa;
+DELETE FROM Depto;

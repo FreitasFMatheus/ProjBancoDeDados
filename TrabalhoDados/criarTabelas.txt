@@ -1,0 +1,177 @@
+-- ORDEM CORRETA PARA CRIAÇÃO DAS TABELAS ATUALIZADAS
+
+-- =======================
+-- Tabela Pessoa
+-- =======================
+CREATE TABLE Pessoa (
+    cpf VARCHAR PRIMARY KEY,
+    nome VARCHAR
+);
+
+-- =======================
+-- Tabela Depto
+-- =======================
+CREATE TABLE Depto (
+    id_depto INT PRIMARY KEY,
+    nome VARCHAR,
+    chefe_depto INT
+);
+
+-- =======================
+-- Tabela Professor
+-- =======================
+CREATE TABLE Professor (
+    id_professor INT PRIMARY KEY,
+    cpf VARCHAR,
+    id_depto INT,
+    FOREIGN KEY (cpf) REFERENCES Pessoa(cpf),
+    FOREIGN KEY (id_depto) REFERENCES Depto(id_depto)
+);
+
+-- Adiciona a FK de chefe de departamento depois (para evitar circularidade)
+ALTER TABLE Depto
+ADD CONSTRAINT fk_chefe_depto 
+FOREIGN KEY (chefe_depto) REFERENCES Professor(id_professor);
+
+-- =======================
+-- Tabela Curso
+-- =======================
+CREATE TABLE Curso (
+    id_curso INT PRIMARY KEY,
+    nome VARCHAR,
+    id_depto INT,
+    coordenador_curso INT,
+    FOREIGN KEY (id_depto) REFERENCES Depto(id_depto),
+    FOREIGN KEY (coordenador_curso) REFERENCES Professor(id_professor)
+);
+
+-- =======================
+-- Tabela Disciplina
+-- =======================
+CREATE TABLE Disciplina (
+    id_disciplina INT PRIMARY KEY,
+    nome VARCHAR,
+    id_depto INT,
+    coordenador_disciplina INT,
+    FOREIGN KEY (id_depto) REFERENCES Depto(id_depto),
+    FOREIGN KEY (coordenador_disciplina) REFERENCES Professor(id_professor)
+);
+
+-- =======================
+-- Tabela Turma
+-- =======================
+CREATE TABLE Turma (
+    id_turma INT PRIMARY KEY,
+    periodo INT,
+    ano INT,
+    semestre_ano VARCHAR,
+    id_curso INT,
+    id_disciplina INT,
+    FOREIGN KEY (id_curso) REFERENCES Curso(id_curso),
+    FOREIGN KEY (id_disciplina) REFERENCES Disciplina(id_disciplina)
+);
+
+-- =======================
+-- Tabela Turma_DP (nova)
+-- =======================
+CREATE TABLE Turma_DP (
+    id_turma_dp INT PRIMARY KEY,
+    periodo INT,
+    ano INT,
+    semestre_ano VARCHAR,
+    id_curso INT,
+    id_disciplina INT,
+    FOREIGN KEY (id_curso) REFERENCES Curso(id_curso),
+    FOREIGN KEY (id_disciplina) REFERENCES Disciplina(id_disciplina)
+);
+
+-- =======================
+-- Tabela Aluno (com id_turma_dp)
+-- =======================
+CREATE TABLE Aluno (
+    id_aluno INT PRIMARY KEY,
+    cpf VARCHAR,
+    id_curso INT,
+    id_turma INT,
+    id_turma_dp INT,
+    FOREIGN KEY (cpf) REFERENCES Pessoa(cpf),
+    FOREIGN KEY (id_curso) REFERENCES Curso(id_curso),
+    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma),
+    FOREIGN KEY (id_turma_dp) REFERENCES Turma_DP(id_turma_dp)
+);
+
+-- =======================
+-- Tabela Grupo_TCC
+-- =======================
+CREATE TABLE Grupo_TCC (
+    id_grupo INT PRIMARY KEY,
+    aluno1 INT,
+    aluno2 INT,
+    aluno3 INT,
+    aluno4 INT,
+    aluno5 INT,
+    FOREIGN KEY (aluno1) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (aluno2) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (aluno3) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (aluno4) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (aluno5) REFERENCES Aluno(id_aluno)
+);
+
+-- =======================
+-- Tabela TCC
+-- =======================
+CREATE TABLE TCC (
+    orientador INT,
+    titulo VARCHAR,
+    id_grupo INT,
+    FOREIGN KEY (orientador) REFERENCES Professor(id_professor),
+    FOREIGN KEY (id_grupo) REFERENCES Grupo_TCC(id_grupo)
+);
+
+-- =======================
+-- Tabela Aula
+-- =======================
+CREATE TABLE Aula (
+    id_aula INT PRIMARY KEY,
+    id_turma INT,
+    professor_aula INT,
+    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma),
+    FOREIGN KEY (professor_aula) REFERENCES Professor(id_professor)
+);
+
+-- =======================
+-- Tabela Avaliacao
+-- =======================
+CREATE TABLE Avaliacao (
+    id_avaliacao INT PRIMARY KEY,
+    nota INT,
+    id_disciplina INT,
+    FOREIGN KEY (id_disciplina) REFERENCES Disciplina(id_disciplina)
+);
+
+-- =======================
+-- Tabela Nota
+-- =======================
+CREATE TABLE Nota (
+    id_nota INT PRIMARY KEY,
+    id_aluno INT,
+    id_truma INT,
+    concluido BOOLEAN,
+    id_avaliacao INT,
+    FOREIGN KEY (id_aluno) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (id_truma) REFERENCES Turma(id_turma),
+    FOREIGN KEY (id_avaliacao) REFERENCES Avaliacao(id_avaliacao)
+);
+
+-- =======================
+-- Tabela HistoricoEscolar
+-- =======================
+CREATE TABLE HistoricoEscolar (
+    id_aluno INT,
+    id_turma INT,
+    id_nota INT,
+    FOREIGN KEY (id_aluno) REFERENCES Aluno(id_aluno),
+    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma),
+    FOREIGN KEY (id_nota) REFERENCES Nota(id_nota)
+);
+
