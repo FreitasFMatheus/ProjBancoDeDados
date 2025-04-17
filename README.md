@@ -253,6 +253,9 @@ erDiagram
     GRUPO_TCC ||--|| TCC : compoe
 
 
+```
+
+
 
 ## Como popular rapidamente o banco de dados
 
@@ -277,7 +280,3 @@ erDiagram
    Gera avaliações, notas (aprovado/reprovado) e preenche o histórico escolar.
 
 > Execute esses scripts nessa ordem para ter um banco completo e coerente para testes.
-
-
-
-```
