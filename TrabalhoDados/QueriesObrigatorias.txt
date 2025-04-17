@@ -1,0 +1,112 @@
+1.
+SELECT 
+    P.nome AS aluno,
+    D.nome AS disciplina,
+    A.nota,
+    T.ano,
+    T.semestre_ano,
+    T.periodo
+FROM 
+    HistoricoEscolar HE
+JOIN Nota N ON HE.id_nota = N.id_nota
+JOIN Avaliacao A ON N.id_avaliacao = A.id_avaliacao
+JOIN Disciplina D ON A.id_disciplina = D.id_disciplina
+JOIN Turma T ON HE.id_turma = T.id_turma
+JOIN Aluno Al ON HE.id_aluno = Al.id_aluno
+JOIN Pessoa P ON Al.cpf = P.cpf
+WHERE 
+    P.nome = 'Davi Luiz Fernandes'
+    AND N.concluido = TRUE
+ORDER BY 
+    T.ano ASC,
+    T.semestre_ano ASC,
+    D.nome ASC;
+
+2.
+SELECT 
+    T.id_grupo,
+    T.titulo,
+    P_membro.nome AS nome_aluno
+FROM 
+    TCC T
+JOIN 
+    Professor Prof ON T.orientador = Prof.id_professor
+JOIN 
+    Pessoa P_orientador ON Prof.cpf = P_orientador.cpf
+JOIN 
+    Grupo_TCC GT ON T.id_grupo = GT.id_grupo
+
+-- Explodindo os membros com segurança
+JOIN LATERAL (
+    SELECT aluno_id FROM (
+        VALUES (GT.aluno1), (GT.aluno2), (GT.aluno3), (GT.aluno4), (GT.aluno5)
+    ) AS membros(aluno_id)
+    WHERE aluno_id IS NOT NULL
+) AS membros ON true
+
+JOIN 
+    Aluno A ON A.id_aluno = membros.aluno_id
+JOIN 
+    Pessoa P_membro ON A.cpf = P_membro.cpf
+
+WHERE 
+    P_orientador.nome ILIKE 'toninho';
+
+3.
+SELECT DISTINCT
+    C.nome AS curso,
+    T.periodo,
+    D.nome AS disciplina
+FROM 
+    Aluno_Turma AT
+JOIN 
+    Turma T ON T.id_turma = AT.id_turma
+JOIN 
+    Curso C ON T.id_curso = C.id_curso
+JOIN 
+    Disciplina D ON D.id_disciplina = AT.id_disciplina
+WHERE 
+    C.nome = 'Ciência da Computação'
+ORDER BY 
+    T.periodo, D.nome;
+
+4.
+SELECT 
+    D.id_disciplina,
+    D.nome AS nome_disciplina,
+    P.nome AS nome_professor,
+    N.concluido
+FROM 
+    Nota N
+JOIN 
+    Aluno A ON N.id_aluno = A.id_aluno
+JOIN 
+    Turma T ON N.id_turma = T.id_turma
+JOIN 
+    Aula AU ON AU.id_turma = T.id_turma
+JOIN 
+    Professor Prof ON AU.professor_aula = Prof.id_professor
+JOIN 
+    Pessoa P ON Prof.cpf = P.cpf
+JOIN 
+    Aluno_Turma AT ON AT.id_aluno = A.id_aluno AND AT.id_turma = T.id_turma
+JOIN 
+    Disciplina D ON D.id_disciplina = AT.id_disciplina
+WHERE 
+    A.id_aluno = <ID ALUNO>;
+
+5.
+SELECT 
+    P.nome AS nome_professor,
+    COALESCE(D.nome, 'nenhum') AS departamento_que_coordena,
+    COALESCE(C.nome, 'nenhum') AS curso_que_coordena
+FROM 
+    Professor Prof
+JOIN 
+    Pessoa P ON Prof.cpf = P.cpf
+LEFT JOIN 
+    Depto D ON D.chefe_depto = Prof.id_professor
+LEFT JOIN 
+    Curso C ON C.coordenador_curso = Prof.id_professor
+WHERE 
+    D.chefe_depto IS NOT NULL OR C.coordenador_curso IS NOT NULL;
